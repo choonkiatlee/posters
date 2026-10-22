@@ -1,13 +1,38 @@
-# Upload the book's image assets
+# Add page 001 artwork and previews
 
-The connected GitHub integration can commit text files but cannot transfer the binary PNG assets from the prepared local archive. The `posters` source files are committed; finish by uploading the PNG assets from the ZIP provided in the ChatGPT conversation.
+The repository contains the source code, YAML manuscript, and design configuration.
+The binary images are in the prepared `posters_repo_ready.zip` from the ChatGPT
+conversation. The GitHub connector cannot upload those image bytes directly.
 
-1. Download and unzip `posters_repo_ready.zip`.
-2. Clone `https://github.com/choonkiatlee/posters.git`.
-3. Copy the contents of the extracted `posters/projects/xiao-judan-world-tasting/assets/` folder into the same location in your clone.
-4. You can also copy the `generated/` folder to include ready-made SVG masters and PNG previews. The SVGs use relative links to the PNGs.
-5. Run `git add projects/xiao-judan-world-tasting/assets projects/xiao-judan-world-tasting/generated`, commit, and push.
+## One-time upload
 
-The archive also contains scripts and documentation; do **not** overwrite newer files in the repository when copying. No font binaries should be committed.
+1. Download [the prepared ZIP from the conversation](https://chatgpt.com/) and save it locally, e.g. to `~/Downloads/posters_repo_ready.zip`.
+2. In a terminal with Git access to your account, run:
 
-The original image masters are 1086×1448 pixels each. This is a prototype, not a print-ready resolution.
+```bash
+git clone https://github.com/choonkiatlee/posters.git
+cd posters
+python scripts/import_book_assets.py ~/Downloads/posters_repo_ready.zip
+git add projects/xiao-judan-world-tasting/assets projects/xiao-judan-world-tasting/generated
+git commit -m "Add page 001 illustrations, original lettering and previews"
+git push origin master
+```
+
+The importer only reads the archive's `assets/` and `generated/` folders, never
+overwrites existing files, and preserves all source files already committed.
+
+## Verify
+
+The `Book page previews` GitHub Actions workflow checks both
+original-lettering and editable-text render modes when the assets exist.
+To regenerate locally:
+
+```bash
+cd projects/xiao-judan-world-tasting
+python -m pip install -r requirements.txt
+python render_book.py
+python render_book.py --text-mode editable
+```
+
+No font binaries are included; editable-text mode uses a local replacement font.
+These 1086×1448 illustrations are prototypes rather than print-resolution masters.
