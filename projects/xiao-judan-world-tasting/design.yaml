@@ -1,0 +1,13 @@
+# Page units = px at reference 1086 x 1448. Positions are adjustable for each page.
+canvas: {width: 1086, height: 1448}
+font:
+  # Placeholder for *editable* mode; NOT an exact match for original lettering.
+  family: "Noto Serif CJK TC"
+  fallback: "serif"
+  color: "#404235"
+specimen:
+  title: {x: 104, y: 222, size: 63, letter_spacing: 3.7, weight: normal}
+  facts: {x: 112, first_baseline: 306, line_gap: 59, size: 33, letter_spacing: 3.0, weight: normal}
+  divider: {x1: 107, x2: 457, y: 489, stroke: "#716F5D", stroke_width: 1.5, opacity: 0.76}
+story:
+  text: {x: 592, first_baseline: 1350, line_gap: 46, size: 32, letter_spacing: 2.3, weight: normal}

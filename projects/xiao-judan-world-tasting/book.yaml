@@ -1,0 +1,19 @@
+title: "小巨蛋世界試吃計畫"
+language: zh-Hant
+pages:
+  - id: '001'
+    art:
+      specimen: assets/illustrations/001_specimen.png
+      story: assets/illustrations/001_story.png
+    original_text:
+      specimen: assets/text_original/001_specimen.png
+      story: assets/text_original/001_story.png
+    specimen:
+      title: "標本 001｜青草"
+      facts:
+        - "顏色：綠"
+        - "觸感：軟"
+        - "想咬：很想"
+    story:
+      lines:
+        - "一開始，世界就在眼前"
