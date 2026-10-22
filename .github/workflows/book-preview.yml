@@ -1,0 +1,70 @@
+name: Book page previews
+
+on:
+  push:
+    paths:
+      - 'projects/xiao-judan-world-tasting/**'
+      - '.github/workflows/book-preview.yml'
+  pull_request:
+    paths:
+      - 'projects/xiao-judan-world-tasting/**'
+      - '.github/workflows/book-preview.yml'
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/xiao-judan-world-tasting
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: projects/xiao-judan-world-tasting/requirements.txt
+      - name: Check image assets
+        id: assets
+        run: |
+          if test -f assets/illustrations/001_specimen.png &&
+             test -f assets/illustrations/001_story.png &&
+             test -f assets/text_original/001_specimen.png &&
+             test -f assets/text_original/001_story.png; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Upload the image assets before rendering; see ASSET_UPLOAD.md"
+          fi
+      - name: Install dependencies
+        if: steps.assets.outputs.ready == 'true'
+        run: python -m pip install -r requirements.txt
+      - name: Render originals and editable text proofs
+        if: steps.assets.outputs.ready == 'true'
+        run: |
+          python render_book.py
+          python render_book.py --text-mode editable
+      - name: Check rendered spread
+        if: steps.assets.outputs.ready == 'true'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          for folder in [Path('generated'), Path('generated/editable')]:
+              for name in ['001_specimen.svg', '001_story.svg',
+                           '001_specimen_preview.png', '001_story_preview.png',
+                           '001_spread_preview.png']:
+                  assert (folder / name).is_file(), folder / name
+              with Image.open(folder / '001_spread_preview.png') as im:
+                  assert im.size == (2240, 1488), im.size
+          print('Both page preview modes rendered successfully')
+          PY
+      - name: Upload preview artifact
+        if: steps.assets.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: book-page-001-previews
+          path: |
+            projects/xiao-judan-world-tasting/generated/*.png
+            projects/xiao-judan-world-tasting/generated/editable/*.png
+          retention-days: 30
